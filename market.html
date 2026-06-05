@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PropConnect · Market Insights</title>
+<style>
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+
+  body {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f0f0f3;
+    padding: 24px;
+  }
+
+  /* ---------- Phone frame ---------- */
+  .phone {
+    width: 390px;
+    height: 800px;
+    background: #0b1f4d;
+    border-radius: 44px;
+    padding: 12px;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
+  }
+  .screen {
+    width: 100%;
+    height: 100%;
+    background: #f4f5f8;
+    border-radius: 34px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+  }
+
+  /* ---------- Status bar ---------- */
+  .status-bar {
+    height: 30px;
+    background: #0b1f4d;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 22px;
+    color: #fff;
+    font-size: 13px;
+    font-weight: 600;
+  }
+  .status-right { display: flex; align-items: center; gap: 8px; font-size: 12px; }
+  .dots { letter-spacing: 1px; }
+  .wifi-pct { color: #ffe34d; }
+
+  /* ---------- Header ---------- */
+  .header {
+    background: #0b1f4d;
+    padding: 14px 18px 18px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: #fff;
+  }
+  .logo-box {
+    width: 44px; height: 44px;
+    background: #2f6bff;
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px; flex-shrink: 0;
+  }
+  .brand h1 { font-size: 21px; font-weight: 700; line-height: 1.1; }
+  .brand p { font-size: 11px; color: #b9c4e0; margin-top: 2px; }
+
+  /* ---------- Scroll area ---------- */
+  .content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px 16px 20px;
+  }
+  .content::-webkit-scrollbar { width: 5px; }
+  .content::-webkit-scrollbar-thumb { background: #c3c8d2; border-radius: 3px; }
+
+  .card {
+    background: #fff;
+    border-radius: 16px;
+    padding: 18px;
+    margin-bottom: 16px;
+    box-shadow: 0 2px 10px rgba(20, 30, 60, 0.05);
+  }
+  .card-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: #1a2233;
+    margin-bottom: 16px;
+  }
+
+  /* ---------- Market Pulse ---------- */
+  .pulse {
+    background: linear-gradient(135deg, #14306e 0%, #1f4aa0 100%);
+    border: none;
+  }
+  .pulse-title {
+    color: #c5d2f0;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    margin-bottom: 14px;
+  }
+  .pulse-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+  }
+  .pulse-box {
+    background: rgba(255, 255, 255, 0.10);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 12px;
+    padding: 12px 10px;
+  }
+  .pulse-box .pct { color: #fff; font-size: 20px; font-weight: 700; }
+  .pulse-box .lbl { color: #b9c4e0; font-size: 11px; margin-top: 4px; }
+  .pulse-box .trend { color: #2fe08a; font-size: 12px; font-weight: 600; margin-top: 6px; }
+
+  /* ---------- Tabs ---------- */
+  .tabs-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 18px;
+  }
+  .tabs { display: flex; gap: 8px; }
+  .tab {
+    font-size: 13px;
+    padding: 6px 14px;
+    border-radius: 16px;
+    border: 1px solid #d8dde6;
+    color: #5a6273;
+    cursor: pointer;
+    background: #fff;
+  }
+  .tab.active { background: #2f6bff; color: #fff; border-color: #2f6bff; }
+
+  /* ---------- Price bars ---------- */
+  .bar-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+  .bar-name { width: 90px; font-size: 13px; color: #3a4253; flex-shrink: 0; }
+  .bar-track {
+    flex: 1;
+    height: 9px;
+    background: #e8eaef;
+    border-radius: 5px;
+    overflow: hidden;
+  }
+  .bar-fill { height: 100%; background: #2f6bff; border-radius: 5px; }
+  .bar-val { width: 52px; text-align: right; font-size: 13px; font-weight: 700; color: #1a2233; flex-shrink: 0; }
+
+  /* ---------- Cities grid ---------- */
+  .cities-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  .city-card {
+    background: #eef3ff;
+    border-radius: 14px;
+    padding: 14px;
+  }
+  .city-name { font-size: 14px; font-weight: 600; color: #2a3346; display: flex; align-items: center; gap: 6px; }
+  .city-price { font-size: 22px; font-weight: 800; color: #2f6bff; margin-top: 8px; }
+  .city-yoy { font-size: 12px; font-weight: 700; margin-top: 4px; }
+  .up { color: #1ca65a; }
+  .down { color: #e23744; }
+
+  /* ---------- Agent network ---------- */
+  .agent-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+  .agent-name { width: 90px; font-size: 13px; color: #3a4253; flex-shrink: 0; }
+  .agent-fill { height: 100%; background: #1fbf6f; border-radius: 5px; }
+  .agent-val { width: 52px; text-align: right; font-size: 13px; font-weight: 700; color: #1a2233; flex-shrink: 0; }
+
+  /* ---------- Bottom nav ---------- */
+  .bottom-nav {
+    background: #fff;
+    border-top: 1px solid #eef0f4;
+    display: flex;
+    justify-content: space-around;
+    padding: 8px 0 12px;
+  }
+  .nav-item {
+    display: flex; flex-direction: column; align-items: center; gap: 3px;
+    font-size: 11px; color: #9aa1ac; position: relative; cursor: pointer; flex: 1;
+    text-decoration: none;
+  }
+  .nav-item .nav-ico { font-size: 20px; }
+  .nav-item.active { color: #2f6bff; }
+  .nav-item.active::before {
+    content: "";
+    position: absolute;
+    top: -8px;
+    width: 26px; height: 3px;
+    background: #2f6bff;
+    border-radius: 2px;
+  }
+  .nav-badge {
+    position: absolute;
+    top: -6px; right: 28%;
+    background: #e23744; color: #fff;
+    font-size: 10px; font-weight: 600;
+    min-width: 18px; height: 18px; border-radius: 9px;
+    display: flex; align-items: center; justify-content: center; padding: 0 4px;
+  }
+</style>
+</head>
+<body>
+  <div class="phone">
+    <div class="screen">
+
+      <!-- Status bar -->
+      <div class="status-bar">
+        <span>14:44</span>
+        <div class="status-right">
+          <span class="dots">•••</span>
+          <span class="wifi-pct">WiFi 87%</span>
+        </div>
+      </div>
+
+      <!-- Header -->
+      <div class="header">
+        <div class="logo-box">🏠</div>
+        <div class="brand">
+          <h1>Market Insights</h1>
+          <p>Real Estate Data 2026</p>
+        </div>
+      </div>
+
+      <!-- Scrollable content -->
+      <div class="content">
+
+        <!-- Market Pulse -->
+        <div class="card pulse">
+          <div class="pulse-title">MARKET PULSE 2026</div>
+          <div class="pulse-grid">
+            <div class="pulse-box">
+              <div class="pct">+12%</div>
+              <div class="lbl">Lahore YoY</div>
+              <div class="trend">Rising</div>
+            </div>
+            <div class="pulse-box">
+              <div class="pct">+8%</div>
+              <div class="lbl">Karachi YoY</div>
+              <div class="trend">Rising</div>
+            </div>
+            <div class="pulse-box">
+              <div class="pct">+17%</div>
+              <div class="lbl">ISB YoY</div>
+              <div class="trend">Rising</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Price/Marla by Area -->
+        <div class="card">
+          <div class="tabs-row">
+            <div class="card-title" style="margin:0;">Price/Marla by Area</div>
+            <div class="tabs">
+              <span class="tab active">Lahore</span>
+              <span class="tab">Karachi</span>
+              <span class="tab">Islamabad</span>
+            </div>
+          </div>
+
+          <div class="bar-row">
+            <span class="bar-name">DHA Phase 5</span>
+            <div class="bar-track"><div class="bar-fill" style="width:100%"></div></div>
+            <span class="bar-val">42L/M</span>
+          </div>
+          <div class="bar-row">
+            <span class="bar-name">Bahria Town</span>
+            <div class="bar-track"><div class="bar-fill" style="width:86%"></div></div>
+            <span class="bar-val">36L/M</span>
+          </div>
+          <div class="bar-row">
+            <span class="bar-name">Gulberg</span>
+            <div class="bar-track"><div class="bar-fill" style="width:76%"></div></div>
+            <span class="bar-val">32L/M</span>
+          </div>
+          <div class="bar-row">
+            <span class="bar-name">Model Town</span>
+            <div class="bar-track"><div class="bar-fill" style="width:62%"></div></div>
+            <span class="bar-val">26L/M</span>
+          </div>
+          <div class="bar-row" style="margin-bottom:0;">
+            <span class="bar-name">Johar Town</span>
+            <div class="bar-track"><div class="bar-fill" style="width:48%"></div></div>
+            <span class="bar-val">20L/M</span>
+          </div>
+        </div>
+
+        <!-- Cities YoY Trends -->
+        <div class="card">
+          <div class="card-title">Cities YoY Trends</div>
+          <div class="cities-grid">
+            <div class="city-card">
+              <div class="city-name">🏙️ Lahore</div>
+              <div class="city-price">38L/M</div>
+              <div class="city-yoy up">+12%</div>
+            </div>
+            <div class="city-card">
+              <div class="city-name">🌊 Karachi</div>
+              <div class="city-price">29L/M</div>
+              <div class="city-yoy up">+8%</div>
+            </div>
+            <div class="city-card">
+              <div class="city-name">🏛️ Islamabad</div>
+              <div class="city-price">55L/M</div>
+              <div class="city-yoy up">+17%</div>
+            </div>
+            <div class="city-card">
+              <div class="city-name">🌳 Rawalpindi</div>
+              <div class="city-price">22L/M</div>
+              <div class="city-yoy down">-2%</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Agent Network -->
+        <div class="card">
+          <div class="card-title">Agent Network</div>
+          <div class="agent-row">
+            <span class="agent-name">Lahore</span>
+            <div class="bar-track"><div class="agent-fill" style="width:100%"></div></div>
+            <span class="agent-val">4,200+</span>
+          </div>
+          <div class="agent-row">
+            <span class="agent-name">Karachi</span>
+            <div class="bar-track"><div class="agent-fill" style="width:86%"></div></div>
+            <span class="agent-val">3,600+</span>
+          </div>
+          <div class="agent-row">
+            <span class="agent-name">Islamabad</span>
+            <div class="bar-track"><div class="agent-fill" style="width:64%"></div></div>
+            <span class="agent-val">2,700+</span>
+          </div>
+          <div class="agent-row" style="margin-bottom:0;">
+            <span class="agent-name">Rawalpindi</span>
+            <div class="bar-track"><div class="agent-fill" style="width:45%"></div></div>
+            <span class="agent-val">1,900+</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Bottom nav -->
+      <div class="bottom-nav">
+        <a class="nav-item" href="index.html">
+          <span class="nav-ico">💬</span>
+          <span>Chats</span>
+          <span class="nav-badge">16</span>
+        </a>
+        <a class="nav-item" href="#">
+          <span class="nav-ico">🏡</span>
+          <span>Listings</span>
+        </a>
+        <a class="nav-item active" href="market.html">
+          <span class="nav-ico">📊</span>
+          <span>Market</span>
+        </a>
+        <a class="nav-item" href="#">
+          <span class="nav-ico">📞</span>
+          <span>Calls</span>
+        </a>
+        <a class="nav-item" href="#">
+          <span class="nav-ico">👤</span>
+          <span>Profile</span>
+        </a>
+      </div>
+
+    </div>
+  </div>
+</body>
+</html>
